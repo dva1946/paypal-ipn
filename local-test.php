@@ -17,9 +17,9 @@
 get_header();
 if ( ! defined( 'ABSPATH' ) ) {die( '-1' );}
 
-// Using dva1946@yahoo.com PP Account
 //$system_mode = 'live'; // set 'test' for sandbox and 'live' for real payments.
 $paypal_seller = 'dva1946@yahoo.com'; //Your PayPal account email address
+$paypal_seller = 'anyone@anyplace.com'; //Your PayPal account email address
 
 //$paypal_url = "https://www.wpappsforthat.com/paypal-ipn.php";
 // Get Logged In User & pass along and back (hopefully)
