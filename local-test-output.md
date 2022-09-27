@@ -34,7 +34,7 @@ BELOW REPRESENTS ECHOED RETURNED DATA
 -------------------------------------
 item_one=GeorgeBeGood amount=1.00 
 timestamp=20220926-190617CDT 
-business=dva1946@yahoo.com 
+business=xxxxxxx@yahoo.com 
 cmd=_xclick 
 currency_code=USD 
 user_id=199628 
