@@ -9,7 +9,7 @@
 * re-authored: Dave Van Abel
 * dev_site: wpappsforthat.com
 * re-create_date: 2022-08-22
-* last_update_date: 2022-09-26
+* last_update_date: 2022-09-27
 * base_note: Source = https://dopehacker.com/paypal-integration-website-php/ & now from Github.com
 * Github 08-28-22 DVA: https://github.com/paypal/ipn-code-samples/blob/master/php/example_usage_advanced.php
  * A list of variables is available here:
