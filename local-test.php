@@ -7,9 +7,9 @@
 * application_name: WS / MS PayPal Payment Application
 * business_use: Member payment management
 * author: Dave Van Abel (modified from Ideal Kamerolli)
-* dev_site: wpappsforthat.com
+* dev_site: gvaz.org
 * create_date: 2022-09-03
-* last_update_date: 2022-09-26
+* last_update_date: 2022-09-27
 * base_note: IPN Local Test Suite
 * status: Public Release 
 */
@@ -18,10 +18,10 @@ get_header();
 if ( ! defined( 'ABSPATH' ) ) {die( '-1' );}
 
 //$system_mode = 'live'; // set 'test' for sandbox and 'live' for real payments.
-$paypal_seller = 'anyone@anyplace.com'; //Your PayPal account email address
+$paypal_seller = 'yourseller@yourdomain.com'; //Your PayPal account email address
 
-//$paypal_url = "https://www.wpappsforthat.com/paypal-ipn.php";
-// Get Logged In User & pass along and back (hopefully)
+//$paypal_url = "https://www.wpappsforthat.com/index.php/paypal-ipn.php";	// 09-27-22 This url works
+
 $timestamp = date_i18n('Ymd-HisT'); // Grab Time
 
 // understanding passing to class and more //
@@ -44,6 +44,7 @@ class Fruit {
   $banana = new Fruit();
   $apple->set_name('Apple');
   $banana->set_name('Banana');
+// *************************************** //
     
 ?>
 <head>
@@ -51,7 +52,7 @@ class Fruit {
 </head>
 <h2>IPN Local Test</h2>
 <table name="localtest" id="customers" >
-	<form name="localtest" id="localtest" method="post" action="https://www.wpappsforthat.com/index.php/paypal-ipn/"  >
+	<form name="localtest" id="localtest" method="post" action="https://www.yourdomain.com/index.php/paypal-ipn/"  >
 	
 		<div class="row">		
 			<!-- Specify product details -->

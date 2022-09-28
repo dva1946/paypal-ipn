@@ -1,4 +1,6 @@
 # paypal-ipn
+  NEW CLOSING NOTE: Sept 27, 2022 BELOW!
+  
   Advanced instructions for installation of WpAppsForThat.Com Paypal Ipn App.
   1) Must should know and understand basics of writing applications for Wordpress.
   2) Have a child theme for your website, else you will be really upset down-the-road.
@@ -29,7 +31,7 @@
     2) What Paypal shows and what works here are different.
     3) Mine turns out to be: https://www.wpappsforthat.com/index.php/paypal-ipn/
       a. This also shows up in local-test.php:
-        a.1 <form name="localtest" id="localtest" method="post" action="https://www.wpappsforthat.com/paypal-ipn/"  >
+        a.1 <form name="localtest" id="localtest" method="post" action="https://www.wpappsforthat.com/index.php/paypal-ipn/"  >
       b. How yours really works is a guessing game. This alone is important to have working code
          before going to the IPN simulator.
 
@@ -41,6 +43,12 @@ PHP Scripts:
 CLOSING NOTE: Sept 26, 2022:
   I started work on IPN for Wordpress May of 2020 and finally got back to 
   it around mid August 2022. 
+
+CLOSING NOTE: Sept 27, 2022:
+  paypal-ipn.php and PalpalIPN.php both have minor changes from previous updates.
+  Paypal Simulator can be very fussy.
+  Local testing can be very fussy.
+  Once I fully tie down these conditions, more infomation will be added.
 
   Expect to see updates to this doc as I continue work with IPN for Wordpress.
  

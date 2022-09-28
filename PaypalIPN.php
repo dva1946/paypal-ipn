@@ -22,6 +22,8 @@
 *                       variable on line approx line 65 of paypal-ipn.php script!
 *                   THE END OF DOC ON THIS TOPIC
 *                    
+* 09-27-22 - echo print lines have been left in for local debugging & do not affect PP Simulator.
+* 09-27-22 - DVA re-testing locally, tested Paypal Simulator. Both Good!
 * 09-26-22 - DVA re-testing locally
 * 09-09-22 @8:31pm - DVA This is SIMULATOR USE - SANDBOX
 * 09-09-22 5pm DVA -Starting IPN Simulator Testing
@@ -82,7 +84,7 @@ echo "<br>IPN-1a1-> Inside get_name function: $this->test_location<br>";
                 $local_invalid = "VERIFIED";
 echo "IPN-1a2-> Invalid = ";
 echo INVALID;  
-echo "<br>IPN-1a3-> USE LOCAL TEST<br>";
+echo "<br>IPN-1a3-> <b> <FONT COLOR='green'>RUN LOCAL TEST</font></b><br>";
             } 
             else {
                 // PP SIMULATOR - DEFINE CONSTANTS //
@@ -95,7 +97,7 @@ echo "<br>IPN-1b1->USE SIMULATOR IPN TEST<br>";
                 $sim_invalid = "INVALID";
 echo "IPN-1b2-> Valid = ";
 echo VALID;  
-echo "<br>IPN-1b3-> USE SIMULATOR TEST<br>";
+echo "<br>IPN-1b3-> <FONT COLOR='red'>USE SIMULATOR TEST</font><br>";
                             }
             return array ($local_verified, $local_invalid, $sim_verified, $sim_invalid);
         }    
@@ -106,7 +108,7 @@ echo "<br>IPN-1b3-> USE SIMULATOR TEST<br>";
      * should not be enabled in production).
      * @return void
      */
-   public function useSandbox() {        
+    public function useSandbox() {        
         $this->use_sandbox = true;
     }
 
@@ -117,9 +119,9 @@ echo "<br>IPN-1b3-> USE SIMULATOR TEST<br>";
      */
     public function usePHPCerts() {
         // 09-04-22 Using certs from wpappsforthat.com
-        // 09-09-22 try flip flop for SIMULATOR
         $this->use_local_certs = false;
-        //$this->use_local_certs = true;  // using = "/home1/davelkwd/wpappsforthat.com/wp-includes/certificates/ca-bundle.crt"
+        //$this->use_local_certs = true;  
+        // if req'd using = "/home1/davelkwd/wpappsforthat.com/wp-includes/certificates/ca-bundle.crt"
     }
 
     /**
@@ -155,7 +157,6 @@ echo  "<br>";
 echo "IPN-1c2-> Invalid = ";
 echo INVALID;
 echo  "<br>";  
-echo "<br>6:58PM Monday Ok to here.<br>";
         
         $raw_post_data = file_get_contents('php://input');  // 09-02-22 Seems to want datae. Time to pass real data per example from PP
         $raw_post_array = explode('&', $raw_post_data);
@@ -198,8 +199,10 @@ echo "<br>6:58PM Monday Ok to here.<br>";
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
                 
         // DVA: NOT EVEN SURE IF USED / REQUIRED: This is often required if the server is missing a global cert bundle, or is using an outdated one.
-        if ($this->use_local_certs) {
-echo "IPN-1d-> In local Cert if clause, and not sure why here!<br>";
+        //if ($this->use_local_certs = "true") { // 09-27-22 was returning invalid result, so change to match above if correct
+        if ($this->use_local_certs = "true") {
+echo "IPN-1d1-> Use local cert = $this->use_local_certs<br>";
+echo "IPN-1d2-> In local Cert if clause, and not sure why here!<br>";
             curl_setopt($ch, CURLOPT_CAINFO, "/home1/davelkwd/wpappsforthat.com/wp-includes/certificates/ca-bundle.crt");
         }
         
@@ -213,7 +216,7 @@ echo "IPN-1d-> In local Cert if clause, and not sure why here!<br>";
         $res = curl_exec($ch);
 
 echo "IPN-1e-> res = $res<br>";
-
+        // 09-27-22 might want to re-write this if clause as can be misleading.
         if ( ! ($res)) {
             $errno = curl_errno($ch);
             $errstr = curl_error($ch);

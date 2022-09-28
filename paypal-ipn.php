@@ -2,7 +2,7 @@
 /**
 * Template Name: Paypal Ipn
 * script_name: paypal-ipn.php
-* parent_script_name: 
+* parent_script_name: none
 * page_name: Paypal Ipn
 * application_name: PayPal IPN Validation for PayPal IPN
 * business_use: WpApps PayPal Ipn Solutions
@@ -12,6 +12,8 @@
 * last_update_date: 2022-09-26
 * base_note: Source = https://dopehacker.com/paypal-integration-website-php/ & now from Github.com
 * Github 08-28-22 DVA: https://github.com/paypal/ipn-code-samples/blob/master/php/example_usage_advanced.php
+ * A list of variables is available here:
+ *  https://developer.paypal.com/webapps/developer/docs/classic/ipn/integration-guide/IPNandPDTVariables/
 * Last Committed: Latest commit 3b21502 on May 4, 2017 
 * status: Work-in-progress 
 * WithDBCode: paypal-ipn-08-28-22-withDBsavedCode.php
@@ -19,6 +21,8 @@
 */
  
 /**
+* 09-27-22 - echo print lines have been left in for local debugging & do not affect PP Simulator.
+* 09-27-22 - DVA re-testing locally, tested Paypal Simulator. Both Good!
 * 09-26-22 DVA retested locally.
 * 09-09-22 @8:31pm - DVA This is SIMULATOR USE - SANDBOX
 * 09-08-22 DVA - Added if ($le) { code and also had to pass $le + retrieve on some functions (PaypalIPN.php).
@@ -52,7 +56,7 @@ if ( ! defined( 'ABSPATH' ) ) {die( '-1' );}
 $enable_sandbox = true; // Set this to true to use the sandbox endpoint during testing
 
 //$my_email_addresses = array("my_email_address@gmail.com", "my_email_address2@gmail.com", "my_email_address3@gmail.com");
-$my_email_addresses = array("my_email_address@gmail.com");
+$my_email_addresses = array("yourseller@yourdomain.com");
 
 require('PaypalIPN.php');
 use PaypalIPN;
@@ -83,8 +87,6 @@ if ($enable_sandbox) {
     $ipn->useSandbox();
 }
 
-//$verified = $ipn->verifyIPN($test_local); 
-//list($verified, $logfile, $data_text) = $ipn->verifyIPN($test_local); // don't think need to pass value
 list($verified, $logfile, $data_text) = $ipn->verifyIPN(); 
 
 if ($verified) {
@@ -92,11 +94,6 @@ if ($verified) {
 } else {
     echo "<br>PP End -> FAILED<br>";
 }
-    /*
-     * Process IPN
-     * A list of variables is available here:
-     * https://developer.paypal.com/webapps/developer/docs/classic/ipn/integration-guide/IPNandPDTVariables/
-     */
 ?>
 <br>PP->BOTTOM OF LOCAL IPN TEST PROCESS! -> <a href="index.php/local-test/"><b>IPN Local Test</b></a><br><br>
 <?php
