@@ -1,5 +1,8 @@
 <?php class PaypalIPN
 /**
+**************************
+* DOC - CONSTANT SECTION *
+**************************
 * 09-12-12 MAJOR CODE CHANGES FOR CONSTANT DEFINING
 *   Need constants  1)  public function set_name: 
 *                       Defined in the running code, 
@@ -22,6 +25,38 @@
 *                       variable on line approx line 65 of paypal-ipn.php script!
 *                   THE END OF DOC ON THIS TOPIC
 *                    
+********************
+* DOC - CHANGE LOG *
+********************
+*********************************************************************************
+* NOTICE: As of 10-18-22 this is fully functional code on my website.			*
+* NOTICE: As of 10-18-22 this is fully functional code tested on Paypal Sandbox *
+*********************************************************************************
+
+* ****** VALID SANDBOX PAYPAL URL 10-15-22 @ 7:36pm *****************************
+* $paypal_url = "https://www.mydomain.com/index.php/paypal-ipn/";               *
+* HIDDEN IPN after 12-08-22 https://developer.paypal.com/dashboard/ipnSimulator *
+* ****** VALID SANDBOX PAYPAL URL 10-15-22 @ 7:36pm *****************************
+*
+* 10-18-22	Github distribtuion
+* 10-18-22 	Got the code running for LOCAL & IPN SIMULATOR.
+* 10-17-22  @8:44pm: Got most everything done (except shop_txn_id for IPN, but it is not real anyway!!)
+*           On WS I can pass the real value, which is already done.
+* 10-17-22 	paypalIPN-bu-Functinal-StillMinorTweaks-101722-3pm.php
+* 10-17-22  paypalIPN-bu-IpnDbNotSaving-10162288pm.php
+*           Backups from last night where IPN Simulator records
+*           were not saving. Best I can tell, it has to do with minuplating data
+*           foreach loop to accumulate data for saving use //
+*               foreach ($_POST as $key => $value) {
+*           I will attempt to find the problem and then maybe re-write saved raw data.
+* 10-15-22 - Modified code for LOCAL & SIMULATOR testing (see notes under paypal-ipn.php for details)
+* 10-13-22 - LOCAL vs SIMULATOR controlled from local-test.php by this: <input type="hidden" name="run_local_test" value="1">
+*            In PaypalIPN.php 
+* 10-11-22 - Moved to WS - DEV
+* 10-09-22 - Trying to solve data issue from Simulator
+* 10-07-22 - Adding DB code to Apps
+* 10-07-22 - Backed up code = PaypalIPN-GoodCode-100722-548pm.php
+* 10-04-22 - Integrated documentation notations for accompanying doc in PDF.
 * 09-27-22 - echo print lines have been left in for local debugging & do not affect PP Simulator.
 * 09-27-22 - DVA re-testing locally, tested Paypal Simulator. Both Good!
 * 09-26-22 - DVA re-testing locally
@@ -37,10 +72,10 @@
 * Maybe) Latest commit cb738c4 on Mar 16, 2018
 * 09-03-22 -> https://stackoverflow.com/questions/14015144/sample-php-code-to-integrate-paypal-ipn
 */
-    // ******************** //
-{   // BEGIN ALL CLASS CODE //
-    // ******************** //
-
+// ****************************** 
+// * DOC - BEGIN ALL CLASS CODE *
+// ******************************
+{
     /** @var bool Indicates if the sandbox endpoint is used. */
     //private $use_sandbox = false;
     private $use_sandbox = true;
@@ -48,18 +83,9 @@
     private $use_local_certs = true;
 
     /** Production Postback URL */
-    // 09-7-22 think only one can be used
     //const VERIFY_URI = 'https://ipnpb.paypal.com/cgi-bin/webscr';
     /** Sandbox Postback URL */
     const SANDBOX_VERIFY_URI = 'https://ipnpb.sandbox.paypal.com/cgi-bin/webscr';
-
-    /** Response from PayPal indicating validation was successful */
-        // 09-07-22 Per PP https://developer.paypal.com/api/nvp-soap/ipn/IPNTesting/#local-development-testing
-        //  local testing flip-flop code logic, but I am
-        //  un-sure if do it here. So try here and see if 
-        //  we get IPN-8b echoed. If so, may be going the right direction.
-
-    // 09-07-22 see URL and discussion below: https://developer.paypal.com/api/nvp-soap/ipn/IPNTesting/ #local-development-testing
 
     // GET VALUE FOR SIMULATOR USE - LOCAL or IPN SIMULATOR //
         
@@ -71,37 +97,48 @@
         }
         
         // Get value from above function to determine LOCAL or IPN SIMULATOR test condition
-        
+// **************
+// * DOC - ECHO *
+// **************
+
+// **************************
+// * DOC - DEFINE CONSTANTS *
+// **************************
+
         function get_name ($test_location) {
-echo "<br>IPN-1a1-> Inside get_name function: $this->test_location<br>";
+            echo "<br>IPN-1a1-> Inside get_name function: $this->test_location<br>";
             // LOCAL - DEFINE CONSTANTS //
-            if ($this->test_location ==1) {
+            if ($this->test_location >=1) {     //10-18-22 Modifed from == to >= due to using 1 or 2 for versions of local testing
                 define("VALID", "INVALID");
                 define("INVALID", "VERIFIED");
                 $sim_verified = "";
                 $sim_invalid = "";
                 $local_verified = "INVALID";
                 $local_invalid = "VERIFIED";
-echo "IPN-1a2-> Invalid = ";
-echo INVALID;  
-echo "<br>IPN-1a3-> <b> <FONT COLOR='green'>RUN LOCAL TEST</font></b><br>";
+                echo "IPN-1a2-> Invalid = ";
+                echo INVALID;  
+                echo "<br>IPN-1a3-> <b> <FONT COLOR='green'>RUN LOCAL TEST</font></b><br>";
             } 
             else {
                 // PP SIMULATOR - DEFINE CONSTANTS //
-echo "<br>IPN-1b1->USE SIMULATOR IPN TEST<br>"; 
+                echo "<br>IPN-1b1->USE SIMULATOR IPN TEST<br>"; 
                 define("VALID", "VERIFIED");
                 define("INVALID", "INVALID");
                 $local_verified = "";
                 $local_invalid = "";
                 $sim_verified = "VERIFIED";
                 $sim_invalid = "INVALID";
-echo "IPN-1b2-> Valid = ";
-echo VALID;  
-echo "<br>IPN-1b3-> <FONT COLOR='red'>USE SIMULATOR TEST</font><br>";
-                            }
+                echo "IPN-1b2-> Valid = ";
+                echo VALID;  
+                echo "<br>IPN-1b3-> <FONT COLOR='red'>USE SIMULATOR TEST</font><br>";
+            }
             return array ($local_verified, $local_invalid, $sim_verified, $sim_invalid);
         }    
     // *************************************************** //
+
+// *******************************
+// * DOC - GENERAL HOUSEKEEPING  *
+// *******************************
 
     /**
      * Sets the IPN verification to sandbox mode (for use when testing,
@@ -145,18 +182,20 @@ echo "<br>IPN-1b3-> <FONT COLOR='red'>USE SIMULATOR TEST</font><br>";
      * @throws Exception
      */
 
+// **************************************
+// * DOC - FUNCTION VERIFYIPN & SAVING  *
+// **************************************
+
     public function verifyIPN() {        
-        //$this->test_location = $test_location;
-        //die;
         if ( ! count($_POST)) {
             throw new Exception("Missing POST Data");
         }
-echo "<br>IPN-1c1-> Valid = ";
-echo VALID;
-echo  "<br>";
-echo "IPN-1c2-> Invalid = ";
-echo INVALID;
-echo  "<br>";  
+        echo "<br>IPN-1c1-> Valid = ";
+        echo VALID;
+        echo  "<br>";
+        echo "IPN-1c2-> Invalid = ";
+        echo INVALID;
+        echo  "<br>";  
         
         $raw_post_data = file_get_contents('php://input');  // 09-02-22 Seems to want datae. Time to pass real data per example from PP
         $raw_post_array = explode('&', $raw_post_data);
@@ -173,12 +212,18 @@ echo  "<br>";
                 $myPost[$keyval[0]] = urldecode($keyval[1]);
             }
         }
-                
+        // Local test, not processing code //
+        if (! $myPost) {
+            echo "IPN-1c3-> array myPost empty<br>";     
+        }              
+        // ******************************* //
+
         // Build the body of the verification post request, adding the _notify-validate command.
         $req = 'cmd=_notify-validate';
         $logfile = "";
+        //$res = null;
 
-        // really need to save to DB here
+        // 10-17-22: Initially Received Raw daata
         foreach ($myPost as $key => $value) {
             $req .= "&$key=$value";
         }
@@ -194,15 +239,12 @@ echo  "<br>";
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $req);
-        //curl_setopt($ch, CURLOPT_SSLVERSION, 6);    // Not used by AngellEYE PaypayIPN
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
                 
-        // DVA: NOT EVEN SURE IF USED / REQUIRED: This is often required if the server is missing a global cert bundle, or is using an outdated one.
-        //if ($this->use_local_certs = "true") { // 09-27-22 was returning invalid result, so change to match above if correct
         if ($this->use_local_certs = "true") {
-echo "IPN-1d1-> Use local cert = $this->use_local_certs<br>";
-echo "IPN-1d2-> In local Cert if clause, and not sure why here!<br>";
+        echo "IPN-1d1-> Use local cert = $this->use_local_certs<br>";
+        echo "IPN-1d2-> In local Cert if clause, and not sure why here!<br>";
             curl_setopt($ch, CURLOPT_CAINFO, "/home1/davelkwd/wpappsforthat.com/wp-includes/certificates/ca-bundle.crt");
         }
         
@@ -215,53 +257,170 @@ echo "IPN-1d2-> In local Cert if clause, and not sure why here!<br>";
        
         $res = curl_exec($ch);
 
-echo "IPN-1e-> res = $res<br>";
-        // 09-27-22 might want to re-write this if clause as can be misleading.
+        echo "IPN-1e-> res = $res: INVALID locally means OK.<br>";
         if ( ! ($res)) {
             $errno = curl_errno($ch);
             $errstr = curl_error($ch);
             curl_close($ch);
+            echo "IPN-1e1-> Curl error = $errstr<br>";
             throw new Exception("cURL error: [$errno] $errstr");
         }
+        echo "IPN-1e2-> Following further.<br>";
 
         $info = curl_getinfo($ch);
         $http_code = $info['http_code'];
+        echo "IPN-1e3-> http_code = $http_code<br>";
         
         if ($http_code != 200) {
             throw new Exception("PayPal responded with http code $http_code");
         }
         
         curl_close($ch);        
-        
-        // 09-06-22: LOCAL TEST HAS NO PP RETURNS
-        // Check if PayPal verifies the IPN data, and if so, return true.
 
-        if ($res == VALID) {
-            $i = 0;
-            $data_text=$txn_id=$txn_type = "";
+        // ***************************************** //
+        // 10-13-22 SHOULD BE END OF IPN HANDSHAKING //
+        // ***************************************** //
+
+        $run_local_test = 0;
+        $payment_status = "";
+        $payment_type   = "";
+        $ws_user_id     = "";
+        $test_ipn       = "";
+
+        // ********************************* //
+        // MAIN BODY OF CODE FOR SAVING DATA //
+        // ********************************* //
+
+        if ($res) {
+            $i          = 0;
+            $data_text  = "";
+            $shop_txn_id= "";
+            $txn_type   = "";
+            $timestamp  = "";
+            $mc_gross   = 0;
+            $mc_fee     = 0;
+            $mc_net     = 0;
+            $pay_net    = 0;
+     
+            echo "IPN-1f1-> In a SAVE DATA.<br>";
+
+            // Loop to accumulate data for saving use //
 
             foreach ($_POST as $key => $value) {
                 $i++;
-                $data_text .= $key . "=" . $value . "\r\n";
-                // Retrieve specific $key & $value
-                if ($key == "txn_id") {
-                    $txn_id = $value;
-                }
-                if ($key == "txn_type") {
-                    $txn_type = $value;
+
+                // ** ONLY PROCESSING LOCAL TEST DATA ** //
+                if (($_POST['run_local_test'] == 1) OR ($_POST['run_local_test'] == 2)) {
+                    // 10-18-22 Only added this in case a need to use for controls.
+                    if ($i == 1) {
+                        $run_local_test = $_POST['run_local_test'];
+                        echo "IPN-> run_local_test = $run_local_test<br>"; 
+                    }
+                    if ($key == "shop_txn_id") {
+                        $shop_txn_id = $value;
+                        echo "IPN-1f2-> shop_txn_id = $shop_txn_id<br>";
+                    }
+                    elseif ($key == "payment_status") {
+                        list($b, $c) = explode("|", $value);
+                        // EX of values = Completed|instant
+                        $payment_status = $b;   //Many choices
+                        $payment_type = $c;     //instant (for CC) or echeck (for echeck)
+                        echo "IPN-1g-> Payment Status = $b<br>"; 
+                        echo "IPN-1g-> Payment Type = $c<br>"; 
+                        // Special case handling:
+                        //  reset $value to $b + payment_type = $c
+                        //  add $key =payment_type $key & $value
+                        $data_text .= "payment_status" . "=" . $b . "\r\n";
+                        $data_text .= "payment_type" . "=" . $c . "\r\n";
+                    } 
+                    elseif ($key == "user_id") {
+                        $ws_user_id = $value;
+                        $data_text .= "user_id" . "=" . $ws_user_id . "\r\n";
+                        echo "IPN-1g-> user_id = $ws_user_id<br>";
+                    } 
+                    elseif ($key == "timestamp") {
+                        $timestamp	= $value;
+                        $data_text .= "$key" . "=" . $value . "\r\n";
+                        echo "IPN-1g-> timestamp = $value<br>";
+                    }
+                    elseif ($key == "mc_gross") {
+                        $mc_gross	= $value;
+                        $data_text .= "$key" . "=" . $value . "\r\n";
+                        echo "IPN-1g-> mc_gross = $mc_gross<br>";
+                    }       // ** ONLY PROCESSING LOCAL TEST DATA ** //
+                    else {   // All IPN data added here per foreach
+                        $data_text .= $key . "=" . $value . "\r\n";
+                        //echo "IPN-1g-> $key = $value<br>";
+                    }    
+                }       // ** END OF ONLY PROCESSING LOCAL TEST DATA ** //               
+                // 10-18-22 working on missing stuff for DB IPN routine
+                else {  // ** NOW IN IPN DATA HANDLING ** //
+                //elseif (($_POST['run_local_test'] != 1) OR ($_POST['run_local_test'] != 2)) {                    // Can use individual if statements, but can not do math (my guess)                    
+                    if ($key     == "payment_status")   {$payment_status = $value; }
+                    elseif ($key == "payment_type")     {$payment_type = $value; }
+                    elseif ($key == "mc_gross")         {$mc_gross = $value; }
+                    elseif ($key == "mc_fee")           {$mc_fee = $value; }
+                    // No $value changed for said $key, therefore write all of them here 
+                    $data_text .= $key . "=" . $value . "\r\n";
                 }
             }
 
-            /* CUSTOM LOGFILE CREATION & WRITING TO IT - found alternate */
+            // AFTER FOREACH -> compute + add to exported data and use below in DB save
+            //if ($_POST['run_local_test']) {
+                //if (($_POST['run_local_test'] == 1) OR ($_POST['run_local_test'] == 2)) {
+            if ($mc_net == 0) {
+                $payment_fee    = $mc_gross * 0.029;      // cc% charge
+                $payment_fee    = $payment_fee + 0.30;                  // flat fee charge
+                $mc_fee 	    = (round($payment_fee, 2));             // round it per standards            
+                $pay_net        = $mc_gross - $mc_fee;
+                $mc_net         = $pay_net;
+                //$data_text     .= "mc_fee" . "=" . $mc_fee . "\r\n";        // need for local data
+                $data_text     .= "mc_net" . "=" . $mc_net . "\r\n";
+                echo "IPN-1g-> pay_net = $pay_net<br>";
+                echo "IPN-1g-> mc_net = $mc_net<br>";
+            }
+            if (!$ws_user_id) {
+            //elseif ((empty($_POST['run_local_test'])) && (empty($_POST['user_id']))) {
+                $ws_user_id = (rand(5000,9000));
+                $data_text     .= "user_id" . "=" . $ws_user_id . "\r\n";
+                echo "IPN-1g-> ws_user_id = $ws_user_id<br>";
+            }
+            // 10-18-22 Test code to see if a variable is populated or even correctly
+            $stl = strlen($timestamp);
+            if ($stl < 15) {
+                echo "IPN-1g IPN-> Timestamp String Length = $stl<br>";
+                echo "timestamp = $timestamp<br>";
+            }  
+               //else {
+            if (!$timestamp) {
+                date_default_timezone_set("America/Chicago");
+                list($year, $month, $day, $hour, $minute, $second, $timezone) = explode(":", date("Y:m:d:H:i:s:T"));
+                $timestamp = date_i18n('Ymd-His'); // Grab Time
+                //$timestamp = $year. $month. $day-$hour $minute . $second; // Grab Time
+                $data_text     .= "timestamp" . "=" . $timestamp . "\r\n";
+                echo "IPN-1g-> timestamp = $timestamp<br>";
+            }
 
-            date_default_timezone_set("America/Chicago");
-            list($year, $month, $day, $hour, $minute, $second, $timezone) = explode(":", date("Y:m:d:H:i:s:T"));
-            $timestamp = date_i18n('Ymd-His'); // Grab Time
- 
+            // 10-17-22 CAN NOT GET IT, SO STOP at 9pm: Temporary populate $shop_txn_id //
+            if (!$shop_txn_id) {
+            //if (empty($_POST['shop_txn_id'])) {
+                $shop_txn_id 	= $ws_user_id . ":" . "$timestamp"; 
+                //$user_id     .= "timestamp" . "=" . $timestamp . "\r\n";
+                $data_text     .= "shop_txn_id" . "=" . $shop_txn_id . "\r\n";
+            }
+            $stl = strlen($timestamp);
+            if ($stl < 15) {
+                echo "IPN-1g General-> Password String Length = $stl<br>";
+            }  
+
             $write_to_db    = 1;
             $save_log_file  = 1;  // Set this to true to save a log file:
-            $log_file_dir   = "/home1/davelkwd/wpappsforthat.com/wp-content/uploads/paypal-ipn-logs/";	// 08-22-22 took (partially) from product.php log directory ($a)
-            $logfile 	    = $timestamp . ":" . "id-$txn_id" . ":". "txntyp-$txn_type" . ".txt";
+            $wp_content_dir = WP_CONTENT_DIR;
+            $log_file_dir   = $wp_content_dir . "/uploads/paypal-ipn-logs/";	// 08-22-22 took (partially) from product.php log directory ($a)
+            // 10-16-22: IPN -> payment_type = echeck|instant
+            //           LOCAL -> two parts 
+            // 0=10-09-22 change 
+            $logfile 	    = $timestamp . ":" . "id-$shop_txn_id" . ":". "type-$payment_type" . ":" . "status-$payment_status" . ".txt";
             $filename 	    = "$log_file_dir" . "$logfile";
 
             // WRITE TO TEXT FILE (temporary process) // //
@@ -272,26 +431,107 @@ echo "IPN-1e-> res = $res<br>";
                 fclose($fh);                //close file
             } 
 
-            // ADD DATABASE SAVING HERE! //
-                /*
-                * DB codes for types of transactions
-                *   payment_status=Completed => New record
-                *   payer_status=verified
-                *   payment_status=
-                */
+// *************************
+// * DOC - MySQL & Schema  *
+// *************************
 
+// ADD DATABASE SAVING HERE! //
+
+            // 10-07-22 Adding DB code //
+            
+            global $wpdb;       // For DB connection, etc
+            global $tbl_name;   // For DB connection, etc
+            $tbl_name 	= $wpdb->prefix.'paypal_transactions';
+            $errors     = new WP_Error();   
 
             if ($write_to_db) {
-                // PENDING
+                $wpdb->query( $wpdb->prepare( 
+                    "INSERT INTO $tbl_name
+                    (
+                    item_number, 			
+                    item_name,
+                    user_id,
+                    timestamp,
+                    payer_email,
+
+                    payer_id,
+                    payer_status,
+                    first_name,
+                    last_name,
+                    receiver_email,
+
+                    payment_type,
+                    payment_status,
+                    payment_date,                    
+                    mc_gross,
+                    mc_fee,
+
+                    mc_net,
+                    mc_currency,
+                    txn_id,
+                    transaction_subject,
+                    currency_code,
+
+                    verify_sign,
+                    shop_txn_id,
+                    test_ipn)				
+                    VALUES (%s,   %s, %d,  %s,  %s,  
+                            %s,   %s, %s,  %s,   %s,
+                            %s,   %s, %s,  %.2f, %.2f,
+                            %.2f, %s, %d,  %s,   %s, 
+                            %s,   %s, %s) 
+                    ",
+                    $_POST['item_number'], 
+                    $_POST['item_name'], 
+                    $ws_user_id,
+                    $timestamp,
+                    $_POST['payer_email'],
+
+                    $_POST['payer_id'],
+                    $_POST['payer_status'],
+                    $_POST['first_name'],
+                    $_POST['last_name'],
+                    $_POST['receiver_email'],
+
+                    $payment_type,
+                    $payment_status,
+                    $_POST['payment_date'],                  
+                    $_POST['mc_gross'],
+                    $mc_fee,
+
+                    $mc_net,
+                    $_POST['mc_currency'],
+                    $_POST['txn_id'],
+                    $_POST['transaction_subject'],
+                    $_POST['currency_code'],
+
+                    $_POST['verify_sign'], 
+                    $shop_txn_id,
+                    $test_ipn
+                ) );			
+                if (!$wpdb) {                     
+                    echo "IPN-1ga-> ERROR WRITING TO DB, NO RECORD SAVED<br>";
+                    $errors = true;
+                } else {
+                    echo "IPN-1gb-> SUCCESSFULLY WROTE TO DB!<br>";
+                    $errors = false;
+                }
+                $wpdb->flush();                      
             }
 
-            // ************************* //
+            // ** END WRITE TO DB ** //
 
-            //return true;
-            return array (1,$logfile,$data_text);
-        } else {
-            // echo "IPN-Return below res=$res<br>";    // No content for SIMULATOR VERSION            
+            echo "IPN-1ha-> return array for logfile + data for screen output.<br>"; 
+
+            return array (1,$logfile,$data_text);   //return
+        } 
+        else {
+            echo "IPN-1hb-> FAILED! Return w/o processing data res=$res.<br>";    // No content for SIMULATOR VERSION            
             return false;
         }
-    }
-}      // END ALL CLASS CODE //
+    }       // End of public function verifyIPN() //
+}           // END ALL CLASS CODE //
+
+// **************************** 
+// * DOC - END ALL CLASS CODE *
+// ************************* //
