@@ -1,4 +1,10 @@
 # paypal-ipn
+ 10-18-22 a completed updated set of script have been uploaded.
+ These script are fully functional. However, more documentation
+ is needed and will be forthcoming within the next week.
+ 
+ The database schema is also provided.
+ 
  Paypal IPN application for receiving Paypal IPN Notifications.
 
  This Paypal IPN application is for testing and implementing IPN messaging
